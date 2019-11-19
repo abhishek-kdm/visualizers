@@ -6,10 +6,16 @@
     "watch": "webpack -d --watch --env.development",
     "build": "webpack -p --env.production"
   },
-  "keywords": ["algorithms", "visualization", "sorting"],
+  "keywords": [
+    "algorithms",
+    "visualization",
+    "sorting"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.8.0",
+    "@typescript-eslint/parser": "^2.8.0",
     "awesome-typescript-loader": "^5.2.1",
     "eslint": "^6.6.0",
     "path": "^0.12.7",
