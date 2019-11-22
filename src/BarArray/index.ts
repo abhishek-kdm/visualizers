@@ -4,7 +4,7 @@ const DEFAULT_START_X: number = 10;
 const DEFAULT_START_Y: number = 500;
 const DEFAULT_BAR_WIDTH: number = 10;
 const DEFAULT_BAR_SPACING: number = 4;
-const DELAY: number = 100; // in ms.
+// const DELAY: number = 100; // in ms.
 
 type Statement = 'break' | 'continue' | void;
 
@@ -17,26 +17,43 @@ interface BarArrayLoopOptions {
   colors?: { done?: string, processing?: string }
 }
 
+interface BarArrayDrawingOptions {
+  start_x: number
+  start_y: number
+  width: number
+  spacing: number
+}
+
+interface BarArrayStats { [stats: string]: string | null }
+
 
 class BarArray {
-
-
-  canvas: HTMLCanvasElement;
-  ctx: CanvasRenderingContext2D;
+  private canvas: HTMLCanvasElement;
+  private ctx: CanvasRenderingContext2D;
 
   array: number[];
   barArray: Bar[];
 
-  // starting (x, y) on canvas.
-  x = DEFAULT_START_X;
-  y = DEFAULT_START_Y;
-  
-  // width and spacing between bars.
-  width = DEFAULT_BAR_WIDTH;
-  spacing = DEFAULT_BAR_SPACING;
+  private drawingOptions: BarArrayDrawingOptions = {
+    // starting (x, y) on canvas.
+    start_x: DEFAULT_START_X,
+    start_y: DEFAULT_START_Y,
+    
+    // width and spacing between bars.
+    width: DEFAULT_BAR_WIDTH,
+    spacing: DEFAULT_BAR_SPACING,
+  };
 
   // delay in animation (ms).
-  delay = DELAY;
+  // private delay = DELAY;
+
+
+  private statistics: BarArrayStats = {
+    // current algorithm.
+    algo: null,
+    prinary: null,
+    secondary: null,
+  }
 
   constructor(canvas: HTMLCanvasElement, array: number[]) {
     // canvas and context (initialize).
@@ -70,7 +87,9 @@ class BarArray {
 
     // The new value, to which the elements in the array needs to scale to.
     // with 7% negative offset as we want some padding with the canvas borders.
-    const scaleTo = this.y - Math.floor(this.y * 0.07);
+    const { start_y } = this.drawingOptions;
+
+    const scaleTo = start_y - Math.floor(start_y * 0.07);
     this.barArray = this.array.map((v) => ({
       value: Math.floor((v * scaleTo) / scalingValue),
       color: 'black',
@@ -89,17 +108,21 @@ class BarArray {
     this.canvas.height = offsetHeight;
 
     // center the axis, for proper visual (support for negative numbers).
-    this.y = Math.floor(offsetHeight / 2);
+    this.drawingOptions.start_y = Math.floor(offsetHeight / 2);
 
-    // making the visual bar array, responsive.
-    const spacing = (this.spacing * this.length);
-    const borders = (DEFAULT_START_X * 2) - this.spacing;
-    this.width = Math.floor((offsetWidth - borders - spacing) / this.length);
 
+    // trying to make the visual bar array, responsive.
+    const { spacing } = this.drawingOptions;
+
+    const _spacing = (spacing * this.length);
+    const borders = (DEFAULT_START_X * 2) - spacing;
+    this.drawingOptions.width = Math.floor(
+      (offsetWidth - borders - _spacing) / this.length
+    );
     // black border around canvas.
     this.drawRect('black', 0, 0, offsetWidth, offsetHeight, 1);
+    this.drawStatusBar();
   }
-
 
   // pretty standard rect draw for canvas.
   drawRect(
@@ -115,7 +138,7 @@ class BarArray {
     if (lineWidth) {
       this.ctx.lineWidth = lineWidth;
       this.ctx.strokeStyle = color;
-      this.ctx.stroke()
+      this.ctx.stroke();
     } else {
       this.ctx.fillStyle = color;
       this.ctx.fill();
@@ -124,14 +147,35 @@ class BarArray {
 
   // draws the array on canvas with the current `barArray` measures.
   drawArray() {
+    const { start_x, start_y, width, spacing } = this.drawingOptions;
+
     for (let i = 0; i < this.length; i++) {
       const element = this.barArray[i];
-      const width = this.width;
-      const height = element.value;
-      const x = ((this.spacing + this.width) * i) + this.x;
-      const y = this.y - height;
-      this.drawRect(element.color, x, y, width, height);
+      const w = width;
+      const h = element.value;
+      const x = ((spacing + width) * i) + start_x;
+      const y = start_y - h;
+      this.drawRect(element.color, x, y, w, h);
     }
+  }
+
+  drawStatusBar(): void {
+    const stats: string[] = Object.keys(this.statistics)
+      .reduce((acc: string[], key: string) => {
+        if (this.statistics[key])
+          acc.push(`${key}: ${this.statistics[key]}`);
+        return acc;
+      }, []);
+
+    this.fillText(stats.join(' | '), 12, 12);
+  }
+
+  fillText(text: string, x: number, y: number) {
+    const { fillStyle } =  this.ctx;
+    this.ctx.font = '12px Courier';
+    this.ctx.fillStyle = '#000';
+    this.ctx.fillText(text, x, y);
+    this.ctx.fillStyle = fillStyle;
   }
 
   swap(i: number, j: number) {
@@ -152,6 +196,9 @@ class BarArray {
     const { processing, done } = colors || {};
 
     for (let i = _from; inc > 0 ? i <= to : i >= to; i += inc) {
+
+      // @TODO remove index painting from here to `valueAt` method
+      // as that seems too convenient and scalable.
       if (i != _from) this.doneProcessingIndex(i - inc, done);
       this.processingIndex(i, processing);
 
@@ -165,22 +212,6 @@ class BarArray {
     }
   }
 
-
-  async cycleRight(i: number, j: number) {
-    // let t = this.barArray[j];
-    for (let x = i; x < j; x++) {
-      this.doneProcessingIndex(x - 1);
-      this.processingIndex(x);
-      this.swap(x, j);
-
-      // let temp = this.barArray[x];
-      // this.barArray[x] = t;
-      // t = temp;
-      await sleep(100);
-    }
-    this.doneProcessingIndex(i);
-    this.doneProcessingIndex(j);
-  }
 
   async completed() {
     await sleep(50);
@@ -198,14 +229,13 @@ class BarArray {
     if (i >= 0 && i < this.length) this.paint([i], color);
   }
 
-  get length(): number {
-    return this.array.length;
-  }
-
   valueAt(i: number) {
     return this.barArray[i].value;
   }
 
+  // changes color of the given bars and redraws the canavs.
+  // @TODO: need optimization here (maybe) or just avoid 
+  // exessive painting in code.
   paint(xs: number[], color: string) {
     this.resetCanvas();
     for (let x of xs) {
@@ -214,7 +244,13 @@ class BarArray {
     this.drawArray();
   }
 
+  public get length(): number {
+    return this.array.length;
+  }
 
+  public set setAlgo(v: string) {
+    this.statistics.algo = v;
+  }
 
 
   // statics.
@@ -225,7 +261,7 @@ class BarArray {
 
   static colors: { [c: string]: string } = {
     IDEAL: 'black',
-    PROCESSING: 'gray',
+    PROCESSING: 'grey',
     DONE: 'dodgerblue',
     COMPLETED: 'lightpink',
   };
