@@ -4,6 +4,8 @@ import BarArray from '../BarArray';
 const { colors, statements } = BarArray;
 
 const insertionSort = async (array: BarArray) => {
+  array.setAlgo = 'Insertion Sort';
+
   await array.loop(1, array.length - 1, 1, async (i) => {
 
     await array.loop(i - 1, 0, -1, (j) => {
@@ -14,11 +16,11 @@ const insertionSort = async (array: BarArray) => {
         return statements.BREAK;
       }
 
-    }, { colors: { done: colors.DONE, processing: colors.DONE } });
+    }, { colors: { done: 'red', processing: colors.DONE } });
 
   }, { colors: { done: colors.PROCESSING, processing: colors.PROCESSING } });
   await array.completed();
-}
+};
 
 
 export default insertionSort;

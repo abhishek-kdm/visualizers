@@ -4,6 +4,7 @@ import BarArray from '../BarArray';
 const { colors } = BarArray;
 
 const bubbleSort = async (array: BarArray) => {
+  array.setAlgo = 'Bubble Sort';
 
   await array.loop(array.length - 1, 1, -1, async (i) => {
 
