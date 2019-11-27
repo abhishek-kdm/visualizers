@@ -17,9 +17,5 @@ array.drawArray();
 (window as any).insertionSort = () => { Sorter.insertionSort(array); }
 (window as any).selectionSort = () => { Sorter.selectionSort(array); }
 
-(window as any).reset = () => {
-  array.generateBarArray();
-  array.resetCanvas();
-  array.drawArray();
-}
+(window as any).reset = array.toInitialState.bind(array);
 
