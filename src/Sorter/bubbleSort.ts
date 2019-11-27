@@ -1,8 +1,5 @@
 import BarArray from '../BarArray';
 
-
-const { colors } = BarArray;
-
 const bubbleSort = async (array: BarArray) => {
   array.setAlgo = 'Bubble Sort';
 
@@ -14,7 +11,7 @@ const bubbleSort = async (array: BarArray) => {
       }
     });
 
-  }, { colors: { processing: colors.IDEAL, done: colors.DONE } });
+  });
   await array.completed();
 }
 

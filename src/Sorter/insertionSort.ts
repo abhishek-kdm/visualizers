@@ -1,7 +1,6 @@
 import BarArray from '../BarArray';
 
-
-const { colors, statements } = BarArray;
+const { statements } = BarArray;
 
 const insertionSort = async (array: BarArray) => {
   array.setAlgo = 'Insertion Sort';
@@ -16,9 +15,9 @@ const insertionSort = async (array: BarArray) => {
         return statements.BREAK;
       }
 
-    }, { colors: { done: 'red', processing: colors.DONE } });
+    });
 
-  }, { colors: { done: colors.PROCESSING, processing: colors.PROCESSING } });
+  });
   await array.completed();
 };
 

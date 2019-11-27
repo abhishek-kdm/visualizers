@@ -19,7 +19,7 @@ const selectionSort = async (array: BarArray) => {
     // edge case (can't help it).
     array.paint([len - 1], colors.IDEAL)
 
-  }, { colors: { done: colors.DONE } });
+  });
 
   await array.completed();
 }
