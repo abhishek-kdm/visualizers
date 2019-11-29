@@ -16,3 +16,10 @@ export const randInt = (
   max: number
 ): number => Math.floor(Math.random() * (max - min + 1)) + min;
 
+
+export const randArray = (length: number): number[] => {
+  let arr: number[] = [];
+  for (let i = 0; i < length; ++i) arr.push(randInt(10, 99));
+  return arr;
+}
+
