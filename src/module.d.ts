@@ -12,5 +12,6 @@ interface BarArrayDrawingOptions {
   start_y: number
   width: number
   spacing: number
+  statsBarOffset: number
 }
 
