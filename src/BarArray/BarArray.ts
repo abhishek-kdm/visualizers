@@ -1,10 +1,11 @@
+import { sleep } from '../utils';
+
 import {
   DEFAULT_START_X,
   DEFAULT_START_Y,
   DEFAULT_BAR_WIDTH,
   DEFAULT_BAR_SPACING
 } from '../constants';
-import { sleep } from '../utils';
 
 export class BarArray {
   initialArray: number[];
@@ -18,6 +19,7 @@ export class BarArray {
 
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
+  private _state: number = BarArray.states.IDEAL
   private drawingOptions: BarArrayDrawingOptions = {
     // starting (x, y) on canvas.
     start_x: DEFAULT_START_X,
@@ -26,19 +28,25 @@ export class BarArray {
     // width and spacing between bars.
     width: DEFAULT_BAR_WIDTH,
     spacing: DEFAULT_BAR_SPACING,
+
+    statsBarOffset: 100,
   };
 
 
-  static statements: { [s: string]: Statement } = {
+  public static statements: { [s: string]: Statement } = {
     BREAK: 'break',
     CONTINUE: 'continue',
   };
 
-  static colors: { [c: string]: string } = {
-    IDEAL: 'black',
+  public static colors: { [c: string]: string } = {
+    IDEAL: 'white',
     PROCESSING: 'red',
-    DONE: 'dodgerblue',
-    COMPLETED: 'dodgerblue',
+    COMPLETED: 'yellow',
+  };
+
+  public static states: { [c: string]: number } = {
+    IDEAL: 1,
+    BUSY: 0,
   };
 
   constructor(canvas: HTMLCanvasElement, initialArray: number[]) {
@@ -56,7 +64,8 @@ export class BarArray {
     document.addEventListener('resize', this.resetCanvas);
   }
 
-  toInitialState(): void {
+
+  public toInitialState(): void {
     // stats to null
     this.statistics = {};
 
@@ -64,7 +73,11 @@ export class BarArray {
     this.resetCanvas();
     this.generateArray(this.initialArray);
 
+    // clear list of previously saved indices.
     this.previous.clear();
+
+    // reset BarArray state to `IDEAL`.
+    this._state = BarArray.states.IDEAL;
 
     // finally draw the bar array on the canvas.
     this.drawArray();
@@ -97,8 +110,10 @@ export class BarArray {
     const scaleTo = start_y - Math.floor(start_y * 0.07);
     this.barArray = this.initialArray.map((v) => ({
       value: Math.floor((v * scaleTo) / scalingValue),
-      color: 'black',
+      color: BarArray.colors.IDEAL,
     }));
+
+    this.statistics.L = this.length.toString();
   }
 
   // only resets the canvas.
@@ -117,13 +132,15 @@ export class BarArray {
     this.drawingOptions.start_y = Math.floor(offsetHeight / 2);
 
     // trying to make the visual bar array, responsive.
-    const { spacing } = this.drawingOptions;
+    const { spacing, statsBarOffset } = this.drawingOptions;
 
     const _spacing = (spacing * this.length);
     const borders = (DEFAULT_START_X * 2) - spacing;
     this.drawingOptions.width = Math.floor(
-      (offsetWidth - borders - _spacing) / this.length
+      (offsetWidth - borders - _spacing - statsBarOffset) / this.length
     );
+
+    this.drawRect('black', 0, 0, offsetWidth, offsetHeight);
     // black border around canvas.
     this.drawRect('black', 0, 0, offsetWidth, offsetHeight, 1);
     this.drawStatusBar();
@@ -153,33 +170,42 @@ export class BarArray {
 
   // draws the array on canvas with the current `barArray` measures.
   drawArray(): void {
-    const { start_x, start_y, width, spacing } = this.drawingOptions;
+    const {
+      start_x,
+      start_y,
+      width,
+      spacing,
+      statsBarOffset
+    } = this.drawingOptions;
 
     for (let i = 0; i < this.length; i++) {
       const element = this.barArray[i];
       const w = width;
       const h = element.value;
-      const x = ((spacing + width) * i) + start_x;
+      const x = ((spacing + width) * i) + start_x + statsBarOffset;
       const y = start_y - h;
       this.drawRect(element.color, x, y, w, h);
     }
   }
 
   drawStatusBar(): void {
-    const stats: string[] = Object.keys(this.statistics)
-      .reduce((acc: string[], key: string) => {
-        if (this.statistics[key])
-          acc.push(`${key}: ${this.statistics[key]}`);
-        return acc;
-      }, []);
+    const keys = Object.keys(this.statistics).sort();
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const value = this.statistics[key] || '';
 
-    this.drawText(stats.join(' | '), 12, 12);
+      const y = (12 * (i + 1));
+      if (value.length) {
+        this.drawText(key, 12, y);
+        this.drawText(value, 25, y, '#26FF94');
+      }
+    }
   }
 
-  drawText(text: string, x: number, y: number): void {
+  drawText(text: string, x: number, y: number, color?: string): void {
     const { fillStyle } =  this.ctx;
-    this.ctx.font = '12px Courier';
-    this.ctx.fillStyle = '#000';
+    this.ctx.font = 'bold 10px Monospace';
+    this.ctx.fillStyle = color || '#1D6640';
     this.ctx.fillText(text, x, y);
     this.ctx.fillStyle = fillStyle;
   }
@@ -211,6 +237,11 @@ export class BarArray {
   public set setAlgo(v: string) {
     this.statistics.A = v;
   }
+
+  public get state(): number {
+    return this._state;
+  }
+
 }
 
 

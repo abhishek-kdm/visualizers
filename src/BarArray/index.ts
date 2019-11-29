@@ -12,7 +12,7 @@ declare module './BarArray' {
       to: number,
       inc: number,
       f: (i: number) => Statement | Promise<Statement>
-    ): void;
+    ): Promise<void>;
   }
 }
 
@@ -64,6 +64,7 @@ BarArray.prototype.loop = async function(_from, to, inc, f) {
   }
   this.paint(this.previous, BarArray.colors.IDEAL);
   this.previous.clear();
+
 }
 
 
