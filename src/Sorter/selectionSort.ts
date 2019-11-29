@@ -4,6 +4,8 @@ import BarArray from '../BarArray';
 const { colors } = BarArray;
 
 const selectionSort = async (array: BarArray) => {
+  array.toInitialState();
+  array.setAlgo = 'Selection Sort';
   const len = array.length;
 
   await array.loop(0, len - 2, 1, async (i) => {

@@ -3,6 +3,7 @@ import BarArray from '../BarArray';
 const { statements } = BarArray;
 
 const insertionSort = async (array: BarArray) => {
+  array.toInitialState();
   array.setAlgo = 'Insertion Sort';
 
   await array.loop(1, array.length - 1, 1, async (i) => {

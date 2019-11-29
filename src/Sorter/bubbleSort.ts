@@ -1,6 +1,7 @@
 import BarArray from '../BarArray';
 
 const bubbleSort = async (array: BarArray) => {
+  array.toInitialState();
   array.setAlgo = 'Bubble Sort';
 
   await array.loop(array.length - 1, 1, -1, async (i) => {
