@@ -16,7 +16,7 @@ module.exports = (env) => ({
     ]
   },
   resolve: {
-    extensions: ['.ts']
+    extensions: ['.js', '.ts']
   }
 });
 
