@@ -9,9 +9,11 @@
   "keywords": [
     "algorithms",
     "visualization",
-    "sorting"
+    "sorting",
+    "path-finding",
+    "shortest-path"
   ],
-  "author": "",
+  "author": "Abhishek S. Kadam",
   "license": "ISC",
   "devDependencies": {
     "@types/angular": "^1.6.57",
@@ -21,11 +23,11 @@
     "eslint": "^6.6.0",
     "path": "^0.12.7",
     "tslint": "^5.20.1",
-    "typescript": "^3.7.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {
-    "angular": "^1.7.9"
+    "angular": "^1.7.9",
+    "typescript": "^3.7.2"
   }
 }
