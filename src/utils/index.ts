@@ -23,3 +23,12 @@ export const randArray = (length: number): number[] => {
   return arr;
 }
 
+export const jsonify = (str: string): number[] => str
+  .split(',')
+  .join(' ')
+  .split(' ')
+  .filter((s: string) => s.length)
+  .map(Number);
+
+
+
