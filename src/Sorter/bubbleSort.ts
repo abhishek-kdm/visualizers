@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import BarArray from '../BarArray';
 
 const bubbleSort = async (array: BarArray) => {
