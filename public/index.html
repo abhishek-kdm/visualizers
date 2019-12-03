@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
-  <title>Sort Visualizer</title>
+  <title>Sorting Visualizer</title>
 
   <!-- empty favicon -->
   <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
@@ -17,7 +17,6 @@
 
 </head>
 <body ng-controller="SortVisualizerCtrl">
-
   <center>
     <h1>
       <span
@@ -28,26 +27,45 @@
       >Visualizers</span>
     </h1>
   </center>
-  <div class="bs-container">
-    <div id="container">
-      <div id="button-container">
-        <div id="sorter-options-container">
+  <div class="bs-container" id="container">
+    <div id="button-container">
+      <div id="sorter-options-container">
+        <form ng-submit="handlers.sort(F)">
+          <input
+            type="text"
+            ng-disabled="state === states.BUSY"
+            ng-model="arrayUpdater"
+            ng-model-options="{ getterSetter: true }"
+          />
           <select
+            ng-disabled="state === states.BUSY"
             ng-options="option.value as option.label for option in options"
             ng-model="F"
-          >
-          </select>
-          <button type="button" ng-click="sorters[F]()">Sort</button>
-          <button type="button" ng-click="reshuffle()">Reshuffle</button>
-        </div>
-        <div id="reset-button-container">
-          <button type="button" ng-click="reset()">Reset</button>
-        </div>
+          ></select>
+          <button
+            type="submit"
+            ng-disabled="state === states.BUSY"
+          >Sort</button>
+        </form>
+        <button
+          type="button"
+          ng-disabled="state === states.BUSY"
+          ng-click="handlers.randomize()"
+        >
+          Randomize
+        </button>
       </div>
+      <div id="reset-button-container">
+        <button
+          type="button"
+          ng-disabled="state === states.BUSY"
+          ng-click="handlers.reset()"
+        >Reset</button>
+      </div>
+    </div>
 
-      <div id="canvas-container">
-        <canvas id="canvas"></canvas>
-      </div>
+    <div id="canvas-container">
+      <canvas id="canvas"></canvas>
     </div>
   </div>
 
