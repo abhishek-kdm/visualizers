@@ -4,7 +4,8 @@ import {
   DEFAULT_START_X,
   DEFAULT_START_Y,
   DEFAULT_BAR_WIDTH,
-  DEFAULT_BAR_SPACING
+  DEFAULT_BAR_SPACING,
+  DEFAULT_STATISTICS,
 } from '../constants';
 
 export class BarArray {
@@ -15,7 +16,7 @@ export class BarArray {
   previous: any[] = [];
 
   // stats for statusbar.
-  statistics: BarArrayStats = {};
+  statistics: BarArrayStats = Object.assign({}, DEFAULT_STATISTICS);
 
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
@@ -30,6 +31,7 @@ export class BarArray {
     spacing: DEFAULT_BAR_SPACING,
 
     statsBarOffset: 100,
+    textSize: 10,
   };
 
 
@@ -49,6 +51,9 @@ export class BarArray {
     BUSY: 0,
   };
 
+  public static stateEventName: string = 'BarArrayStateEvent';
+
+
   constructor(canvas: HTMLCanvasElement, initialArray: number[]) {
     // canvas and context initialization.
     this.canvas = canvas;
@@ -67,7 +72,7 @@ export class BarArray {
 
   public toInitialState(): void {
     // stats to null
-    this.statistics = {};
+    this.statistics = Object.assign({}, DEFAULT_STATISTICS);
 
     // reset canvas and return array to initial state.
     this.resetCanvas();
@@ -77,10 +82,32 @@ export class BarArray {
     this.previous.clear();
 
     // reset BarArray state to `IDEAL`.
-    this._state = BarArray.states.IDEAL;
+    this.setState(BarArray.states.IDEAL)
 
     // finally draw the bar array on the canvas.
     this.drawArray();
+  }
+
+
+  // to keep track of the current state of the array (if painting or
+  // ideal) for the purpose of disabling multiple methods trying to
+  // update something while some async operation is going on.
+  setState(state: number) {
+    // return if there is no change of state.
+    if (this._state === state) return;
+
+    // change the `_state` value for the current object.
+    this._state = state;
+
+    // dispatch state event.
+    this.canvas.dispatchEvent(new CustomEvent(
+      BarArray.stateEventName,
+      {
+        detail: { state },
+        bubbles: true,
+        cancelable: true,
+      }
+    ));
   }
 
 
@@ -109,11 +136,12 @@ export class BarArray {
 
     const scaleTo = start_y - Math.floor(start_y * 0.07);
     this.barArray = this.initialArray.map((v) => ({
+      initialValue: v,
       value: Math.floor((v * scaleTo) / scalingValue),
       color: BarArray.colors.IDEAL,
     }));
 
-    this.statistics.L = this.length.toString();
+    this.statistics.Length = this.length.toString();
   }
 
   // only resets the canvas.
@@ -185,33 +213,35 @@ export class BarArray {
       const x = ((spacing + width) * i) + start_x + statsBarOffset;
       const y = start_y - h;
       this.drawRect(element.color, x, y, w, h);
+
+      const text_y = y - 5;
+      this.drawText(String(element.initialValue), x, text_y, 'dodgerblue');
     }
   }
 
   drawStatusBar(): void {
     const keys = Object.keys(this.statistics).sort();
+
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       const value = this.statistics[key] || '';
 
-      const y = (12 * (i + 1));
-      if (value.length) {
-        this.drawText(key, 12, y);
-        this.drawText(value, 25, y, '#26FF94');
-      }
+      const y = ((12 * (i + 1)) + (15 * (i + 1)));
+      this.drawText(key, 12, y);
+      this.drawText(value || '--', 12, y + 15, '#26FF94');
     }
   }
 
   drawText(text: string, x: number, y: number, color?: string): void {
     const { fillStyle } =  this.ctx;
-    this.ctx.font = 'bold 10px Monospace';
+    this.ctx.font = `bold ${this.drawingOptions.textSize}px Monospace`;
     this.ctx.fillStyle = color || '#1D6640';
     this.ctx.fillText(text, x, y);
     this.ctx.fillStyle = fillStyle;
   }
 
   // changes color of the given bars and redraws the canavs.
-  // @TODO: need optimization here (maybe) or just avoid 
+  // @TODO: need optimization here (maybe) or just avoid
   // exessive painting in code.
   paint(xs: number[], color: string): void {
     this.resetCanvas();
@@ -227,6 +257,9 @@ export class BarArray {
       this.paint([i], BarArray.colors.COMPLETED);
       await sleep(10);
     }
+
+    // dispatching event `sorterState`
+    this.setState(BarArray.states.IDEAL);
   }
 
   // getters setters.
@@ -235,7 +268,7 @@ export class BarArray {
   }
 
   public set setAlgo(v: string) {
-    this.statistics.A = v;
+    this.statistics.Algorithm = v;
   }
 
   public get state(): number {
@@ -243,5 +276,6 @@ export class BarArray {
   }
 
 }
+
 
 
