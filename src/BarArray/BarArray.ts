@@ -9,6 +9,24 @@ import {
 } from '../constants';
 
 export class BarArray {
+  public static statements: { [s: string]: Statement } = {
+    BREAK: 'break',
+    CONTINUE: 'continue',
+  };
+
+  public static colors: { [c: string]: string } = {
+    IDEAL: 'white',
+    PROCESSING: 'red',
+    COMPLETED: 'yellow',
+  };
+
+  public static states: { [c: string]: number } = {
+    IDEAL: 1,
+    BUSY: 0,
+  };
+
+  public static stateEventName: string = 'BarArrayStateEvent';
+
   initialArray: number[];
   barArray: Bar[];
 
@@ -33,25 +51,6 @@ export class BarArray {
     statsBarOffset: 100,
     textSize: 10,
   };
-
-
-  public static statements: { [s: string]: Statement } = {
-    BREAK: 'break',
-    CONTINUE: 'continue',
-  };
-
-  public static colors: { [c: string]: string } = {
-    IDEAL: 'white',
-    PROCESSING: 'red',
-    COMPLETED: 'yellow',
-  };
-
-  public static states: { [c: string]: number } = {
-    IDEAL: 1,
-    BUSY: 0,
-  };
-
-  public static stateEventName: string = 'BarArrayStateEvent';
 
 
   constructor(canvas: HTMLCanvasElement, initialArray: number[]) {
@@ -233,7 +232,7 @@ export class BarArray {
   }
 
   drawText(text: string, x: number, y: number, color?: string): void {
-    const { fillStyle } =  this.ctx;
+    const { fillStyle } = this.ctx;
     this.ctx.font = `bold ${this.drawingOptions.textSize}px Monospace`;
     this.ctx.fillStyle = color || '#1D6640';
     this.ctx.fillText(text, x, y);
