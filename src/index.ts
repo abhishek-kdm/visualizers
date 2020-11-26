@@ -1,15 +1,15 @@
 import angular from 'angular';
 
-import { SortVisualizerCtrl } from './controllers';
+import { VisualSortCtrl } from './controllers';
 import { BarArrayProvider } from './services';
 
-const app = angular.module('VisualizerApp', []);
+const app = angular.module('VisualSortApp', []);
 
 app.service('BarArrayProvider', BarArrayProvider);
 
-app.controller('SortVisualizerCtrl', [
+app.controller('VisualSortCtrl', [
   '$scope',
   'BarArrayProvider',
-  SortVisualizerCtrl
+  VisualSortCtrl
 ]);
 

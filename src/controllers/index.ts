@@ -5,7 +5,7 @@ import angular from 'angular';
 import { randArray, jsonify } from '../utils';
 import BarArray from '../BarArray';
 
-export const SortVisualizerCtrl = function(
+export const VisualSortCtrl = function(
   $scope: any,
   BarArrayProvider: any
 ) {
