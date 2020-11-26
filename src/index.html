@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="VisualizerApp" ng-cloak>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+  <title>Sorting Visualizer</title>
+
+  <!-- empty favicon -->
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+
+  <style>[ng-cloak] { display: none!important; }</style>
+
+</head>
+<body ng-controller="SortVisualizerCtrl">
+  <header class="container">
+    <h2><u>Visual Sorting</u></h2>
+  </header>
+
+  <main class="container">
+    <div style="margin-bottom: 10px; display: flex; justify-content: space-between;">
+      <form ng-submit="handlers.sort(F)">
+        <input
+          type="text"
+          placeholder="numbers..."
+          ng-disabled="state === states.BUSY"
+          ng-model="arrayUpdater"
+          ng-model-options="{ getterSetter: true }"
+        />
+        <select
+          ng-disabled="state === states.BUSY"
+          ng-options="option.value as option.label for option in options"
+          ng-model="F"
+        ></select>
+        <button type="submit" ng-disabled="state === states.BUSY">
+          Sort
+        </button>
+      </form>
+      <div>
+        <button ng-disabled="state === states.BUSY" ng-click="handlers.randomize()">
+          Randomize
+        </button>
+        <button ng-disabled="state === states.BUSY" ng-click="handlers.reset()">
+          Reset
+        </button>
+      </div>
+    </div>
+    <canvas id="canvas"></canvas>
+  </main>
+</body>
+</html>
+
+
+
