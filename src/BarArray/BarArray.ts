@@ -1,14 +1,8 @@
+import Canvas from './Canvas';
 import { sleep } from '../utils';
+import { DEFAULT_START_X, DEFAULT_STATISTICS } from '../constants';
 
-import {
-  DEFAULT_START_X,
-  DEFAULT_START_Y,
-  DEFAULT_BAR_WIDTH,
-  DEFAULT_BAR_SPACING,
-  DEFAULT_STATISTICS,
-} from '../constants';
-
-export class BarArray {
+export class BarArray extends Canvas {
   public static statements: { [s: string]: Statement } = {
     BREAK: 'break',
     CONTINUE: 'continue',
@@ -27,36 +21,19 @@ export class BarArray {
 
   public static stateEventName: string = 'BarArrayStateEvent';
 
-  initialArray: number[];
-  barArray: Bar[];
+  public initialArray: number[];
+  public barArray: Bar[];
 
   // keeping track of the indices accessed, for highlighting purposes.
-  previous: any[] = [];
+  public previous: any[] = [];
+
+  private state: number = BarArray.states.IDEAL;
 
   // stats for statusbar.
-  statistics: BarArrayStats = Object.assign({}, DEFAULT_STATISTICS);
-
-  private canvas: HTMLCanvasElement;
-  private ctx: CanvasRenderingContext2D;
-  private _state: number = BarArray.states.IDEAL
-  private drawingOptions: BarArrayDrawingOptions = {
-    // starting (x, y) on canvas.
-    start_x: DEFAULT_START_X,
-    start_y: DEFAULT_START_Y,
-
-    // width and spacing between bars.
-    width: DEFAULT_BAR_WIDTH,
-    spacing: DEFAULT_BAR_SPACING,
-
-    statsBarOffset: 100,
-    textSize: 10,
-  };
-
+  stats: BarArrayStats = { ...DEFAULT_STATISTICS };
 
   constructor(canvas: HTMLCanvasElement, initialArray: number[]) {
-    // canvas and context initialization.
-    this.canvas = canvas;
-    this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
+    super(canvas);
 
     // initializing both arrays.
     this.initialArray = initialArray;
@@ -64,17 +41,32 @@ export class BarArray {
 
     // reset everything to initial state.
     this.toInitialState();
-
-    document.addEventListener('resize', this.resetCanvas);
   }
 
+  reset() {
+    this.resetCanvas();
+    const { offsetWidth, offsetHeight } = this.canvas;
+    // setting y as the center the axis,
+    // for proper visual (support for negative numbers).
+    this.drawingOptions.start_y = Math.floor(offsetHeight / 2);
+
+    // trying to make the visual bar array, responsive.
+    const { spacing, statsBarOffset } = this.drawingOptions;
+
+    const space = (spacing * this.length);
+    const borders = (DEFAULT_START_X * 2) - spacing;
+    this.drawingOptions.width = Math.floor(
+      (offsetWidth - borders - space - statsBarOffset) / this.length
+    );
+    this.drawStatusBar();
+  }
 
   public toInitialState(): void {
     // stats to null
-    this.statistics = Object.assign({}, DEFAULT_STATISTICS);
+    this.stats = Object.assign({}, DEFAULT_STATISTICS);
 
-    // reset canvas and return array to initial state.
-    this.resetCanvas();
+    // reset canvas and array to initial state.
+    this.reset();
     this.generateArray(this.initialArray);
 
     // clear list of previously saved indices.
@@ -87,16 +79,15 @@ export class BarArray {
     this.drawArray();
   }
 
-
   // to keep track of the current state of the array (if painting or
   // ideal) for the purpose of disabling multiple methods trying to
   // update something while some async operation is going on.
   setState(state: number) {
     // return if there is no change of state.
-    if (this._state === state) return;
+    if (this.state === state) return;
 
-    // change the `_state` value for the current object.
-    this._state = state;
+    // change the `state` value for the current object.
+    this.state = state;
 
     // dispatch state event.
     this.canvas.dispatchEvent(new CustomEvent(
@@ -108,7 +99,6 @@ export class BarArray {
       }
     ));
   }
-
 
   // generating initialArray and scaled array to match the
   // canvas size.
@@ -140,59 +130,7 @@ export class BarArray {
       color: BarArray.colors.IDEAL,
     }));
 
-    this.statistics.Length = this.length.toString();
-  }
-
-  // only resets the canvas.
-  // does not redraws the bar array.
-  resetCanvas(): void {
-    // trying to make it responsive.
-    this.canvas.style.height = '100%';
-    this.canvas.style.width = '100%';
-
-    const { offsetWidth, offsetHeight } = this.canvas;
-    this.canvas.width = offsetWidth;
-    this.canvas.height = offsetHeight;
-
-    // setting y as the center the axis,
-    // for proper visual (support for negative numbers).
-    this.drawingOptions.start_y = Math.floor(offsetHeight / 2);
-
-    // trying to make the visual bar array, responsive.
-    const { spacing, statsBarOffset } = this.drawingOptions;
-
-    const _spacing = (spacing * this.length);
-    const borders = (DEFAULT_START_X * 2) - spacing;
-    this.drawingOptions.width = Math.floor(
-      (offsetWidth - borders - _spacing - statsBarOffset) / this.length
-    );
-
-    this.drawRect('black', 0, 0, offsetWidth, offsetHeight);
-    // black border around canvas.
-    this.drawRect('black', 0, 0, offsetWidth, offsetHeight, 1);
-    this.drawStatusBar();
-  }
-
-
-  // pretty standard rect draw for canvas.
-  drawRect(
-    color: string,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    lineWidth?: number // in case of drawing a bordered box.
-  ): void {
-    this.ctx.beginPath();
-    this.ctx.rect(x, y, width, height);
-    if (lineWidth) {
-      this.ctx.lineWidth = lineWidth;
-      this.ctx.strokeStyle = color;
-      this.ctx.stroke();
-    } else {
-      this.ctx.fillStyle = color;
-      this.ctx.fill();
-    }
+    this.stats.Length = this.length.toString();
   }
 
   // draws the array on canvas with the current `barArray` measures.
@@ -219,11 +157,11 @@ export class BarArray {
   }
 
   drawStatusBar(): void {
-    const keys = Object.keys(this.statistics).sort();
+    const keys = Object.keys(this.stats).sort();
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
-      const value = this.statistics[key] || '';
+      const value = this.stats[key] || '';
 
       const y = ((12 * (i + 1)) + (15 * (i + 1)));
       this.drawText(key, 12, y);
@@ -231,19 +169,11 @@ export class BarArray {
     }
   }
 
-  drawText(text: string, x: number, y: number, color?: string): void {
-    const { fillStyle } = this.ctx;
-    this.ctx.font = `bold ${this.drawingOptions.textSize}px Monospace`;
-    this.ctx.fillStyle = color || '#1D6640';
-    this.ctx.fillText(text, x, y);
-    this.ctx.fillStyle = fillStyle;
-  }
-
   // changes color of the given bars and redraws the canavs.
   // @TODO: need optimization here (maybe) or just avoid
   // exessive painting in code.
   paint(xs: number[], color: string): void {
-    this.resetCanvas();
+    this.reset();
     for (let x of xs) {
       this.barArray[x].color = color;
     }
@@ -266,15 +196,8 @@ export class BarArray {
     return this.initialArray.length;
   }
 
-  public set setAlgo(v: string) {
-    this.statistics.Algorithm = v;
+  public algorithm(a: string) {
+    this.stats.Algorithm = a;
   }
-
-  public get state(): number {
-    return this._state;
-  }
-
 }
-
-
 

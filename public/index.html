@@ -9,67 +9,50 @@
 
   <!-- empty favicon -->
   <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
-
   <link rel="stylesheet" href="/assets/style.css" />
+
   <style>
-    ng-cloak, [ng-cloak] { display: none; }
+    ng-cloak { display: none; }
   </style>
 
 </head>
 <body ng-controller="SortVisualizerCtrl">
-  <center>
-    <h1>
-      <span
-        style="font-family: monospace; color: #1D6640;">Sorting</span>
-      <span
-        class="glowing-text"
-        style="font-family: courier; color: #26FF94"
-      >Visualizers</span>
-    </h1>
-  </center>
-  <div class="bs-container" id="container">
-    <div id="button-container">
-      <div id="sorter-options-container">
-        <form ng-submit="handlers.sort(F)">
-          <input
-            type="text"
-            ng-disabled="state === states.BUSY"
-            ng-model="arrayUpdater"
-            ng-model-options="{ getterSetter: true }"
-          />
-          <select
-            ng-disabled="state === states.BUSY"
-            ng-options="option.value as option.label for option in options"
-            ng-model="F"
-          ></select>
-          <button
-            type="submit"
-            ng-disabled="state === states.BUSY"
-          >Sort</button>
-        </form>
-        <button
-          type="button"
+  <header class="container">
+    <h2><u>Visual Sorting</u></h2>
+  </header>
+
+  <main class="container">
+    <div style="margin-bottom: 10px; display: flex; justify-content: space-between;">
+      <form ng-submit="handlers.sort(F)">
+        <input
+          type="text"
+          placeholder="numbers..."
           ng-disabled="state === states.BUSY"
-          ng-click="handlers.randomize()"
-        >
+          ng-model="arrayUpdater"
+          ng-model-options="{ getterSetter: true }"
+        />
+        <select
+          ng-disabled="state === states.BUSY"
+          ng-options="option.value as option.label for option in options"
+          ng-model="F"
+        ></select>
+        <button type="submit" ng-disabled="state === states.BUSY">
+          Sort
+        </button>
+      </form>
+      <div>
+        <button ng-disabled="state === states.BUSY" ng-click="handlers.randomize()">
           Randomize
         </button>
-      </div>
-      <div id="reset-button-container">
-        <button
-          type="button"
-          ng-disabled="state === states.BUSY"
-          ng-click="handlers.reset()"
-        >Reset</button>
+        <button ng-disabled="state === states.BUSY" ng-click="handlers.reset()">
+          Reset
+        </button>
       </div>
     </div>
+    <canvas id="canvas"></canvas>
+  </main>
 
-    <div id="canvas-container">
-      <canvas id="canvas"></canvas>
-    </div>
-  </div>
-
-  <script src="/dist/main.js"></script>
+  <script async defer src="/dist/main.js"></script>
 </body>
 </html>
 

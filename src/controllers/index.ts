@@ -5,7 +5,6 @@ import angular from 'angular';
 import { randArray, jsonify } from '../utils';
 import BarArray from '../BarArray';
 
-
 export const SortVisualizerCtrl = function(
   $scope: any,
   BarArrayProvider: any
@@ -20,9 +19,9 @@ export const SortVisualizerCtrl = function(
   });
 
   $scope.array = [];
-  $scope.arrayUpdater = (value: string) => angular.isDefined(value) ?
-    ($scope.array = jsonify(value)) : $scope.array.map(String).join(', ');
-
+  $scope.arrayUpdater = (value: string) => angular.isDefined(value)
+    ? ($scope.array = jsonify(value))
+    : $scope.array.map(String).join(', ');
 
   const array = BarArrayProvider.generateBarArray($scope.array);
 
@@ -47,7 +46,5 @@ export const SortVisualizerCtrl = function(
     { label: 'Insertion Sort', value: 'insertionSort' },
     { label: 'Selection Sort', value: 'selectionSort' },
   ];
-
-
 }
 

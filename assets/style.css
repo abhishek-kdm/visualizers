@@ -1,7 +1,8 @@
 * {
   font-family: monospace;
+  color: #dedede;
+  background-color: #0a0a0a;
 }
-
 
 html, body {
   margin: 0;
@@ -9,100 +10,59 @@ html, body {
   min-height: 100vh;
 }
 
-
 body {
   display: inline-block;
   width: 100vw;
   height: 100vh;
-  background-color: #131313;
 }
 
-#container {
+header {
+  display: flex;
+}
+
+main {
+  margin-top: 25px;
+  margin-bottom: 25px;
   width: 100%;
   height: 70vh;
   display: flex;
-  flex-direction: row;
-  /* align-items: stretch; */
-  justify-content: space-around;
-}
-
-#container > * {
-  flex: 1;
-}
-
-#canvas-container {
-  flex-grow: 5;
-}
-
-#button-container {
-  display: flex;
   flex-direction: column;
 }
-
-#button-container > * {
-  flex: 1;
-}
-
-#sorter-options-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
-}
-
-#reset-button-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-}
-
 
 button, select {
-  padding: auto 10px;
+  padding: .5em 1em;
   border-radius: 2px;
-  border: 1px solid #26FF94;
-  background-color: #000;
-  color: #26FF94;
   cursor: pointer;
   outline: none;
+  border: 1px solid grey;
 }
 
-button:hover {
-  background-color: #15271D;
+button:hover, select:hover {
+  color: #aaaaaa;
+  background-color: #131313;
+  border-color: #292929;
 }
 
-*:disabled {
-  cursor: not-allowed;
+*:disabled { cursor: not-allowed; }
+
+input[type=text] {
+  padding: .5em 1em;
+  border: 1px solid gray;
 }
 
-
-.glowing-text {
-  text-shadow: 0 0 25px #26FF94;
+input[type=text]:focus, input[type=text]:hover {
+  color: #aaaaaa;
+  background-color: #131313;
+  border-color: #292929;
 }
 
-.bs-container {
+.container {
   padding-right: 15px;
   padding-left: 15px;
   margin-right: auto;
   margin-left: auto;
 }
-@media (min-width: 768px) {
-  .bs-container {
-    width: 730px;
-  }
-}
-@media (min-width: 992px) {
-  .bs-container {
-    width: 950px;
-  }
-}
-@media (min-width: 1200px) {
-  .bs-container {
-    width: 1150px;
-  }
-}
-
-input[type=text] {
-  padding: 5px;
-}
+@media (min-width: 768px) { .container { width: 730px; } }
+@media (min-width: 992px) { .container { width: 950px; } }
+@media (min-width: 1200px) { .container { width: 1150px; } }
 

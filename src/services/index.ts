@@ -1,6 +1,5 @@
 import BarArray from '../BarArray';
 
-
 export const BarArrayProvider = function(this: any) {
 
   this.generateBarArray = (arr: number[]): BarArray => {

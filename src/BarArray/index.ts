@@ -2,7 +2,6 @@ import { BarArray } from './BarArray';
 import { sleep } from '../utils';
 import { DEFAULT_DELAY } from '../constants';
 
-
 declare module './BarArray' {
   interface BarArray {
     valueAt(i: number): number;
@@ -26,12 +25,11 @@ BarArray.prototype.valueAt = function(i: number): number {
   this.previous.push(i);
 
   // increment N if exists or set it to 1;
-  const { accessed } = this.statistics;
-  this.statistics.accessed = String(parseInt(accessed || '0', 10) + 1);
+  const { accessed } = this.stats;
+  this.stats.accessed = String(parseInt(accessed || '0', 10) + 1);
 
   return this.barArray[i].value;
 }
-
 
 // swapping numbers in the barArray as well as updating the previous
 // array for visuals.
@@ -52,7 +50,6 @@ BarArray.prototype.swap = function(i: number, j: number) {
   }
 }
 
-
 BarArray.prototype.loop = async function(_from, to, inc, f) {
   this.setState(BarArray.states.BUSY);
 
@@ -70,10 +67,7 @@ BarArray.prototype.loop = async function(_from, to, inc, f) {
   }
   this.paint(this.previous, BarArray.colors.IDEAL);
   this.previous.clear();
-
 }
 
-
 export default BarArray;
-
 
