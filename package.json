@@ -1,9 +1,9 @@
 {
-  "name": "visualizers",
+  "name": "sortvis",
   "version": "1.0.0",
-  "description": "Visualization for algorithms",
+  "description": "Visualization for sorting algorithms",
   "scripts": {
-    "watch": "webpack -d --watch --env.development",
+    "start": "webpack -d --watch --env.development",
     "build": "webpack -p --env.production"
   },
   "keywords": [
@@ -13,7 +13,7 @@
     "path-finding",
     "shortest-path"
   ],
-  "author": "Abhishek S. Kadam",
+  "author": "Abhishek Kadam <abhishekk19@gmail.com>",
   "license": "ISC",
   "devDependencies": {
     "@types/angular": "^1.6.57",
@@ -26,7 +26,6 @@
     "html-webpack-plugin": "^4.5.0",
     "mini-css-extract-plugin": "^1.3.1",
     "path": "^0.12.7",
-    "tslint": "^5.20.1",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
   },

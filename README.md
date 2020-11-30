@@ -1,2 +1,1 @@
-# visualizers
-Visualization for algorithms
+visualization for (some) sorting algorithms.

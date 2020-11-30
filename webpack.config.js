@@ -1,4 +1,4 @@
-/* eslint disable-next-line */
+const Package = require('./package');
 const { resolve } = require('path');
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -11,6 +11,7 @@ module.exports = (env) => ({
   entry: [src('index.ts'), src('style.css')],
   output: {
     path: resolve(__dirname, 'public'),
+    publicPath: env.production ? `https://cdn.lycuid.dev/p/${Package.name}` : '/',
     filename: env.production ? '[name].[contenthash].js' : '[name].js'
   },
   module: {
