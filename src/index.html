@@ -15,12 +15,12 @@
 </head>
 <body ng-controller="VisualSortCtrl">
   <header class="container">
-    <h2><u>Visual Sorting</u></h2>
+    <span class="title">Visual Sorting</span>
   </header>
 
   <main class="container">
-    <div style="margin-bottom: 10px; display: flex; justify-content: space-between;">
-      <form ng-submit="handlers.sort(F)">
+    <form id="form" ng-submit="handlers.sort(F)">
+      <div class="input-container">
         <input
           type="text"
           placeholder="numbers..."
@@ -32,20 +32,35 @@
           ng-disabled="state === states.BUSY"
           ng-options="option.value as option.label for option in options"
           ng-model="F"
+          ng-init="F = options[0].value"
         ></select>
-        <button type="submit" ng-disabled="state === states.BUSY">
+      </div>
+      <div class="button-container">
+        <button
+          type="submit"
+          data-value="Sort"
+          ng-disabled="state=== states.BUSY"
+        >
           Sort
         </button>
-      </form>
-      <div>
-        <button ng-disabled="state === states.BUSY" ng-click="handlers.randomize()">
+        <button
+          type="button"
+          data-value="Randomize"
+          ng-disabled="state === states.BUSY"
+          ng-click="handlers.randomize()"
+        >
           Randomize
         </button>
-        <button ng-disabled="state === states.BUSY" ng-click="handlers.reset()">
+        <button
+          type="button"
+          data-value="Reset"
+          ng-disabled="state === states.BUSY"
+          ng-click="handlers.reset()"
+        >
           Reset
         </button>
       </div>
-    </div>
+    </form>
     <canvas id="canvas"></canvas>
   </main>
 </body>

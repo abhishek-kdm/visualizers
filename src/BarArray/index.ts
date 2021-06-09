@@ -18,7 +18,7 @@ declare module './BarArray' {
 
 // provides with the value at a index and colors respective bar.
 // @TODO doesnt de-color the previous one though.
-BarArray.prototype.valueAt = function(i: number): number {
+BarArray.prototype.valueAt = function (i: number): number {
   this.setState(BarArray.states.BUSY);
 
   this.paint([i], BarArray.colors.PROCESSING);
@@ -29,11 +29,11 @@ BarArray.prototype.valueAt = function(i: number): number {
   this.stats.accessed = String(parseInt(accessed || '0', 10) + 1);
 
   return this.barArray[i].value;
-}
+};
 
 // swapping numbers in the barArray as well as updating the previous
 // array for visuals.
-BarArray.prototype.swap = function(i: number, j: number) {
+BarArray.prototype.swap = function (i: number, j: number) {
   this.setState(BarArray.states.BUSY);
 
   const t = this.barArray[i];
@@ -48,9 +48,9 @@ BarArray.prototype.swap = function(i: number, j: number) {
       this.previous[index] = i + j - e;
     }
   }
-}
+};
 
-BarArray.prototype.loop = async function(_from, to, inc, f) {
+BarArray.prototype.loop = async function (_from, to, inc, f) {
   this.setState(BarArray.states.BUSY);
 
   for (let i = _from; inc > 0 ? i <= to : i >= to; i += inc) {
@@ -67,7 +67,6 @@ BarArray.prototype.loop = async function(_from, to, inc, f) {
   }
   this.paint(this.previous, BarArray.colors.IDEAL);
   this.previous.clear();
-}
+};
 
 export default BarArray;
-

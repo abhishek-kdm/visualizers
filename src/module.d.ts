@@ -1,4 +1,5 @@
 type Statement = 'break' | 'continue' | void;
+type State = number;
 
 interface BarArrayStats { [stats: string]: string | null }
 
@@ -16,5 +17,3 @@ interface BarArrayDrawingOptions {
   statsBarOffset: number
   textSize: number
 }
-
-

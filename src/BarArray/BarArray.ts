@@ -14,7 +14,7 @@ export class BarArray extends Canvas {
     COMPLETED: 'yellow',
   };
 
-  public static states: { [c: string]: number } = {
+  public static states: { [c: string]: State } = {
     IDEAL: 1,
     BUSY: 0,
   };
@@ -27,7 +27,7 @@ export class BarArray extends Canvas {
   // keeping track of the indices accessed, for highlighting purposes.
   public previous: any[] = [];
 
-  private state: number = BarArray.states.IDEAL;
+  private state: State = BarArray.states.IDEAL;
 
   // stats for statusbar.
   stats: BarArrayStats = { ...DEFAULT_STATISTICS };
@@ -53,8 +53,8 @@ export class BarArray extends Canvas {
     // trying to make the visual bar array, responsive.
     const { spacing, statsBarOffset } = this.drawingOptions;
 
-    const space = (spacing * this.length);
-    const borders = (DEFAULT_START_X * 2) - spacing;
+    const space = spacing * this.length;
+    const borders = DEFAULT_START_X * 2 - spacing;
     this.drawingOptions.width = Math.floor(
       (offsetWidth - borders - space - statsBarOffset) / this.length
     );
@@ -73,7 +73,7 @@ export class BarArray extends Canvas {
     this.previous.clear();
 
     // reset BarArray state to `IDEAL`.
-    this.setState(BarArray.states.IDEAL)
+    this.setState(BarArray.states.IDEAL);
 
     // finally draw the bar array on the canvas.
     this.drawArray();
@@ -82,7 +82,7 @@ export class BarArray extends Canvas {
   // to keep track of the current state of the array (if painting or
   // ideal) for the purpose of disabling multiple methods trying to
   // update something while some async operation is going on.
-  setState(state: number) {
+  setState(state: State) {
     // return if there is no change of state.
     if (this.state === state) return;
 
@@ -90,14 +90,13 @@ export class BarArray extends Canvas {
     this.state = state;
 
     // dispatch state event.
-    this.canvas.dispatchEvent(new CustomEvent(
-      BarArray.stateEventName,
-      {
+    this.canvas.dispatchEvent(
+      new CustomEvent(BarArray.stateEventName, {
         detail: { state },
         bubbles: true,
         cancelable: true,
-      }
-    ));
+      })
+    );
   }
 
   // generating initialArray and scaled array to match the
@@ -111,8 +110,10 @@ export class BarArray extends Canvas {
   // array bars.
   generateBarArray(): void {
     // maximum of the array.
-    let scalingValue = this.initialArray
-      .reduce((a, b) => Math.max(a, b), this.initialArray[0]);
+    let scalingValue = this.initialArray.reduce(
+      (a, b) => Math.max(a, b),
+      this.initialArray[0]
+    );
 
     // adding offset 10% to the scaling value (max of the array).
     scalingValue += Math.floor(scalingValue * 0.1);
@@ -135,19 +136,14 @@ export class BarArray extends Canvas {
 
   // draws the array on canvas with the current `barArray` measures.
   drawArray(): void {
-    const {
-      start_x,
-      start_y,
-      width,
-      spacing,
-      statsBarOffset
-    } = this.drawingOptions;
+    const { start_x, start_y, width, spacing, statsBarOffset } =
+      this.drawingOptions;
 
     for (let i = 0; i < this.length; i++) {
       const element = this.barArray[i];
       const w = width;
       const h = element.value;
-      const x = ((spacing + width) * i) + start_x + statsBarOffset;
+      const x = (spacing + width) * i + start_x + statsBarOffset;
       const y = start_y - h;
       this.drawRect(element.color, x, y, w, h);
 
@@ -163,7 +159,7 @@ export class BarArray extends Canvas {
       const key = keys[i];
       const value = this.stats[key] || '';
 
-      const y = ((12 * (i + 1)) + (15 * (i + 1)));
+      const y = 12 * (i + 1) + 15 * (i + 1);
       this.drawText(key, 12, y);
       this.drawText(value || '--', 12, y + 15, '#26FF94');
     }
@@ -191,7 +187,6 @@ export class BarArray extends Canvas {
     this.setState(BarArray.states.IDEAL);
   }
 
-  // getters setters.
   public get length(): number {
     return this.initialArray.length;
   }
@@ -200,4 +195,3 @@ export class BarArray extends Canvas {
     this.stats.Algorithm = a;
   }
 }
-

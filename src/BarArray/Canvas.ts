@@ -5,6 +5,8 @@ import {
   DEFAULT_BAR_SPACING,
 } from '../constants';
 
+const darkmode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
 export default class Canvas {
   protected canvas: HTMLCanvasElement;
   protected ctx: CanvasRenderingContext2D;
@@ -40,9 +42,9 @@ export default class Canvas {
     this.canvas.width = offsetWidth;
     this.canvas.height = offsetHeight;
 
-    this.drawRect('black', 0, 0, offsetWidth, offsetHeight);
-    // black border around canvas.
-    this.drawRect('black', 0, 0, offsetWidth, offsetHeight, 1);
+    this.drawRect(darkmode ? '#0a0a0a' : '#dedede', 0, 0, offsetWidth, offsetHeight);
+    // border.
+    this.drawRect(darkmode ? '#aaaaaa' : '#292929', 0, 0, offsetWidth, offsetHeight, 1);
   }
 
   // pretty standard rect draw for canvas.

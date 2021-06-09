@@ -5,10 +5,7 @@ import angular from 'angular';
 import { randArray, jsonify } from '../utils';
 import BarArray from '../BarArray';
 
-export const VisualSortCtrl = function(
-  $scope: any,
-  BarArrayProvider: any
-) {
+export const VisualSortCtrl = function($scope: any) {
 
   $scope.states = Object.assign({}, BarArray.states);
   $scope.state = $scope.states.IDEAL;
@@ -23,24 +20,24 @@ export const VisualSortCtrl = function(
     ? ($scope.array = jsonify(value))
     : $scope.array.map(String).join(', ');
 
-  const array = BarArrayProvider.generateBarArray($scope.array);
+  const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+  const barArray = new BarArray(canvas, $scope.array);
 
   $scope.handlers = {
-    reset: array.toInitialState.bind(array),
+    reset: barArray.toInitialState.bind(barArray),
 
     randomize: () => {
       $scope.array = randArray(75);
-      array.generateArray($scope.array);
-      array.toInitialState();
+      barArray.generateArray($scope.array);
+      barArray.toInitialState();
     },
 
     sort: (funcName: string) => {
-      array.generateArray($scope.array);
-      (Sorter as { [name: string]: SorterFunction })[funcName](array);
+      barArray.generateArray($scope.array);
+      (Sorter as { [name: string]: SorterFunction })[funcName](barArray);
     },
   }
 
-  $scope.F = 'bubbleSort';
   $scope.options = [
     { label: 'Bubble Sort', value: 'bubbleSort' },
     { label: 'Insertion Sort', value: 'insertionSort' },
