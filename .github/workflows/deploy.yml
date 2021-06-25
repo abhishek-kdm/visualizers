@@ -25,7 +25,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           TARGET: ${{ format('{0}/{1}', github.workspace, 'public') }}
-          S3_ASSETS_PATH: ${{ format('s3://{0}/p/{1}', secrets.S3_ASSETS_BUCKET, github.event.repository.name) }}
+          S3_BUCKET_PATH: ${{ format('s3://{0}/p/{1}', secrets.S3_ASSETS_BUCKET, github.event.repository.name) }}
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-          EC2_ADDRESS: ${{ secrets.EC2_ADDRESS }}
-          EC2_PATH: ${{ format('{0}/{1}', secrets.EC2_BASE_PATH, github.event.repository.name) }}
+          EC2_REMOTE_ADDR: ${{ secrets.EC2_REMOTE_ADDR }}
+          EC2_REMOTE_PATH: ${{ format('{0}/{1}', secrets.EC2_REMOTE_PATH, github.event.repository.name) }}
